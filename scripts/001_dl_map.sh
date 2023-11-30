@@ -7,11 +7,12 @@
 #SBATCH --error=std/dl%j.stderr
 #SBATCH --mail-user=cfiscus@uci.edu
 #SBATCH --mail-type=ALL
-#SBATCH --time=5-00:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --job-name="dl_map"
 #SBATCH -p gcluster
-#SBATCH --array=30
+#SBATCH --array=14,17,41,42,44,49,50,59,74,76,79,84
 
+## array is 2-84
 ## array is 1-141
 # software dependencies
 ## GATK 4.2.6.1
@@ -32,7 +33,7 @@ REFERENCE=/gpool/cfiscus/vitis_snps/data/VITVarB40-14_v2.0.pseudomolecules.hap1.
 ADAPTERSPE=/gpool/cfiscus/bin/Trimmomatic-0.39/adapters/TruSeq3-PE.fa
 ADAPTERSSE=/gpool/cfiscus/bin/Trimmomatic-0.39/adapters/TruSeq3-SE.fa
 LOG=/gpool/cfiscus/vitis_snps/results/logs/"$SLURM_ARRAY_TASK_ID".log
-SEQLIST=/gpool/cfiscus/vitis_snps/data/vitis_samples_external.txt
+SEQLIST=/gpool/cfiscus/vitis_snps/data/vitis_vinifera_samples.txt
 TEMP_DIR=/gpool/cfiscus/temp
 
 # SET LOGS
@@ -40,7 +41,7 @@ exec 1>>${LOG}
 exec 2>>${LOG}
 ###########
 # get filenames from list 
-NUM=$(echo $SLURM_ARRAY_TASK_ID + 1 | bc)
+NUM=$(echo $SLURM_ARRAY_TASK_ID | bc)
 FILE=$(head -n $NUM $SEQLIST | tail -n 1 | cut -f8)
 
 # check if sequencing is single end or paired end
@@ -77,7 +78,7 @@ then # paired end
 	# check MD5sums
 	echo "verifying checksums..."
 	INDEX=1
-	MD5SUMS=$(head -n $SLURM_ARRAY_TASK_ID $SEQLIST | tail -n 1 | cut -f9)
+	MD5SUMS=$(head -n $NUM $SEQLIST | tail -n 1 | cut -f9)
 	for i in $(echo "$MD5SUMS" | tr ";" "\n")
 	do 
 		echo "$i" "$NAME"_"$INDEX".fastq.gz >> chk.md5
@@ -115,7 +116,7 @@ else # single end
 
 	# check MD5sum
 	echo "verifying checksums..."
-	MD5SUMS=$(head -n $SLURM_ARRAY_TASK_ID $SEQLIST | tail -n 1 | cut -f9)
+	MD5SUMS=$(head -n $NUM $SEQLIST | tail -n 1 | cut -f9)
 	echo "$MD5SUMS" "$NAME".fastq.gz >> chk.md5
 	
 	if md5sum --status -c chk.md5; then
@@ -179,4 +180,4 @@ gatk --java-options "-Xmx32G" HaplotypeCaller \
     -ERC GVCF
 
 # clean up temp
-#rm -r "$TEMP_DIR"
+rm -r "$TEMP_DIR"

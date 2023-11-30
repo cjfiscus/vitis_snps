@@ -27,13 +27,15 @@ RESULTS=/gpool/cfiscus/vitis_snps/results
 exec 1>>${LOG}
 exec 2>>${LOG}
 ###########
-# top cut depth and filter very rare alleles
-bcftools view -S ^id_rm.txt -e 'F_MISSING > 0.05' \
-	"$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filter3.vcf.gz | bgzip > "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered.vcf.gz
+# filter samps with > 70% missing and sites with > 5% missing
+bcftools view -S ^id_rm2.txt -e 'F_MISSING > 0.05' \
+	"$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_full_filter3.vcf.gz | bgzip > "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered_final.vcf.gz
 
-tabix "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered.vcf.gz
+# index
+tabix "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered_final.vcf.gz
 
-bcftools query -l "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered.vcf.gz > "$RESULTS"/filtered_samples.txt
+# produce sample list
+bcftools query -l "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered_final.vcf.gz > "$RESULTS"/filtered_samples.txt
 
 # plink missingness report
-plink2 --vcf "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered.vcf.gz --missing --memory 64000 --allow-extra-chr --out filtered
+plink2 --vcf "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filtered_final.vcf.gz --missing --memory 64000 --allow-extra-chr --out filtered

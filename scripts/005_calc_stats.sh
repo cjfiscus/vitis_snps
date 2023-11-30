@@ -29,10 +29,10 @@ exec 1>>${LOG}
 exec 2>>${LOG}
 ###########
 cd "$RESULTS"/vcf
-FILE=VITVarB40-14_v2.0_hap1_"$CHR".vcf.gz
+FILE=VITVarB40-14_v2.0_hap1_chr"$CHR".vcf.gz
 
 ## pull site info
 bcftools query -f '%CHROM %POS %REF %ALT %AF %QD %FS %SOR %MQ %MQRankSum %ReadPosRankSum\n' $FILE | gzip > "$RESULTS"/vcf/"$CHR".vinfo.gz
 
 ## missingness report
-#plink2 --vcf "$FILE" --missing --memory 32000 --allow-extra-chr --out "$CHR"
+plink2 --vcf "$FILE" --missing --memory 32000 --allow-extra-chr --out "$CHR"

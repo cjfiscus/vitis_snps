@@ -2,13 +2,13 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
-#SBATCH --mem=32G
-#SBATCH --output=std/dl%j.stdout
-#SBATCH --error=std/dl%j.stderr
+#SBATCH --mem=64G
+#SBATCH --output=std/db%j.stdout
+#SBATCH --error=std/db%j.stderr
 #SBATCH --mail-user=cfiscus@uci.edu
 #SBATCH --mail-type=ALL
-#SBATCH --time=4-00:00:00
-#SBATCH --job-name="db_import"
+#SBATCH --time=7-00:00:00
+#SBATCH --job-name="db_imp"
 #SBATCH -p gcluster
 #SBATCH --array=1-19
 
@@ -27,7 +27,7 @@ TRIMMOMATIC=/gpool/cfiscus/bin/Trimmomatic-0.39/trimmomatic-0.39.jar
 THREADS=4
 LOG=/gpool/cfiscus/vitis_snps/results/logs/002_"$SLURM_ARRAY_TASK_ID".log
 TEMP_DIR=/gpool/cfiscus/temp
-SAMPLE_MAP=/gpool/cfiscus/vitis_snps/data/sample_map
+SAMPLE_MAP=/gpool/cfiscus/vitis_snps/data/sample_map2
 RESULTS=/gpool/cfiscus/vitis_snps/results/db
 CHR=$(echo "$SLURM_ARRAY_TASK_ID" | awk '{printf "%.2d\n", $1}')
 
@@ -44,9 +44,10 @@ echo "$TEMP_DIR"
 cd "$TEMP_DIR"
 
 ##########
-gatk --java-options "-Xmx32g -Xms4g" GenomicsDBImport \
+gatk --java-options "-Xmx64g -Xms4g" GenomicsDBImport \
 	--sample-name-map "$SAMPLE_MAP" \
 	--genomicsdb-workspace-path "$RESULTS"/db_"$CHR" \
 	--tmp-dir "$TEMP_DIR" \
+	--batch-size 50 \
 	--reader-threads 3 \
 	-L VITVarB40-14_v2.0.hap1.chr${CHR}

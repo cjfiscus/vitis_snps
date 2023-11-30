@@ -28,8 +28,8 @@ exec 1>>${LOG}
 exec 2>>${LOG}
 ###########
 # top cut depth and filter very rare alleles
-bcftools view -e'INFO/DP > (MEAN(INFO/DP) + STDEV(INFO/DP)) | MAF < 0.01' "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1.vcf.gz \
-	| bgzip > "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filter3.vcf.gz
+bcftools view -e'INFO/DP > (MEAN(INFO/DP) + STDEV(INFO/DP)) | MAF < 0.01' "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_full.vcf.gz \
+	| bgzip > "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_full_filter3.vcf.gz
 
 # plink missingness report
-plink2 --vcf "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_filter3.vcf.gz --missing --memory 64000 --allow-extra-chr --out filter3
+plink2 --vcf "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_full_filter3.vcf.gz --missing --memory 64000 --allow-extra-chr --out filter3

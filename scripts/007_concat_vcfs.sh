@@ -27,4 +27,4 @@ RESULTS=/gpool/cfiscus/vitis_snps/results
 exec 1>>${LOG}
 exec 2>>${LOG}
 ###########
-bcftools concat --threads 7 -f concat_lst.txt -o "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1.vcf.gz
+bcftools concat --threads 7 -f concat_lst.txt -o "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_full.vcf.gz

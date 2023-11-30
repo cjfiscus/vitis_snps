@@ -2,9 +2,9 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
-#SBATCH --mem=32G
-#SBATCH --output=std/dl%j.stdout
-#SBATCH --error=std/dl%j.stderr
+#SBATCH --mem=64G
+#SBATCH --output=std/gt%j.stdout
+#SBATCH --error=std/gt%j.stderr
 #SBATCH --mail-user=cfiscus@uci.edu
 #SBATCH --mail-type=ALL
 #SBATCH --time=7-00:00:00
@@ -27,7 +27,7 @@ THREADS=4
 REFERENCE=/gpool/cfiscus/vitis_snps/data/VITVarB40-14_v2.0.pseudomolecules.hap1.fasta
 LOG=/gpool/cfiscus/vitis_snps/results/logs/003_"$SLURM_ARRAY_TASK_ID".log
 TEMP_DIR=/gpool/cfiscus/temp
-SAMPLE_MAP=/gpool/cfiscus/vitis_snps/data/sample_map
+SAMPLE_MAP=/gpool/cfiscus/vitis_snps/data/sample_map2
 RESULTS=/gpool/cfiscus/vitis_snps/results/
 CHR=$(echo "$SLURM_ARRAY_TASK_ID" | awk '{printf "%.2d\n", $1}')
 
@@ -36,14 +36,15 @@ exec 1>>${LOG}
 exec 2>>${LOG}
 ###########
 # get filenames from list
-TEMP_DIR="$TEMP_DIR"/003_"$NAME"
+TEMP_DIR="$TEMP_DIR"/003_"$CHR"
 mkdir -pv "$TEMP_DIR"
 echo "$TEMP_DIR"
 cd "$TEMP_DIR"
 
 ##########
-gatk --java-options "-Xmx32g" GenotypeGVCFs \
+export TILEDB_DISABLE_FILE_LOCKING=1
+gatk --java-options "-Xmx64g -DGATK_STACKTRACE_ON_USER_EXCEPTION=true" GenotypeGVCFs \
    -R "$REFERENCE" \
    -V gendb://"$RESULTS"/db/db_"$CHR" \
-   -O "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_"$CHR".vcf.gz \
+   -O "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_chr"$CHR".vcf.gz \
    --tmp-dir "$TEMP_DIR"
