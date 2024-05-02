@@ -10,7 +10,7 @@
 #SBATCH --time=7-00:00:00
 #SBATCH --job-name="geno"
 #SBATCH -p gcluster
-#SBATCH --array=1-19
+#SBATCH --array=2
 
 # software dependencies
 ## GATK 4.2.6.1
@@ -30,6 +30,7 @@ TEMP_DIR=/gpool/cfiscus/temp
 SAMPLE_MAP=/gpool/cfiscus/vitis_snps/data/sample_map2
 RESULTS=/gpool/cfiscus/vitis_snps/results/
 CHR=$(echo "$SLURM_ARRAY_TASK_ID" | awk '{printf "%.2d\n", $1}')
+INT=/gpool/cfiscus/vitis_snps/results/vcf/VITVarB40-14_v2.0_hap1_filtered_final.vcf.gz
 
 # SET LOGS
 exec 1>>${LOG}
@@ -43,8 +44,13 @@ cd "$TEMP_DIR"
 
 ##########
 export TILEDB_DISABLE_FILE_LOCKING=1
-gatk --java-options "-Xmx64g -DGATK_STACKTRACE_ON_USER_EXCEPTION=true" GenotypeGVCFs \
+gatk --java-options "-Xmx32g -DGATK_STACKTRACE_ON_USER_EXCEPTION=true" GenotypeGVCFs \
    -R "$REFERENCE" \
    -V gendb://"$RESULTS"/db/db_"$CHR" \
-   -O "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_chr"$CHR".vcf.gz \
+   -O "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_chr"$CHR"_allsites.vcf.gz \
+   -all-sites \
+#   -L VITVarB40-14_v2.0.hap1.chr${CHR} \
+   -L ${INT} \
+   -ip 100 \
+   --genomicsdb-shared-posixfs-optimizations true \
    --tmp-dir "$TEMP_DIR"
