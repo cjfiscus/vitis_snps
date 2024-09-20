@@ -18,9 +18,9 @@
 PATH=/gpool/cfiscus/bin:$PATH
 PATH=/gpool/cfiscus/bin/Dsuite/Build:$PATH
 VCF=/gpool/cfiscus/vitis_snps/results/vcf/VITVarB40-14_v2.0_hap1_filtered_final.vcf.gz
-SET=/gpool/cfiscus/vitis_snps/data/vitis_set.txt
+SET=/gpool/cfiscus/vitis_snps/data/vitis_set2.txt
 RESULTS=/gpool/cfiscus/vitis_snps/results/dsuite
 ##########
 cd "$RESULTS"
 
-Dsuite Dtrios -g -o alldata "$VCF" "$SET" 
+Dsuite Dtrios --ABBAclustering -g -o alldata_b "$VCF" "$SET" 

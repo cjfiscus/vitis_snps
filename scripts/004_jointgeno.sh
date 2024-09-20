@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
-#SBATCH --mem=64G
+#SBATCH --mem=100G
 #SBATCH --output=std/gt%j.stdout
 #SBATCH --error=std/gt%j.stderr
 #SBATCH --mail-user=cfiscus@uci.edu
@@ -10,7 +10,7 @@
 #SBATCH --time=7-00:00:00
 #SBATCH --job-name="geno"
 #SBATCH -p gcluster
-#SBATCH --array=2
+#SBATCH --array=19
 
 # software dependencies
 ## GATK 4.2.6.1
@@ -44,13 +44,12 @@ cd "$TEMP_DIR"
 
 ##########
 export TILEDB_DISABLE_FILE_LOCKING=1
-gatk --java-options "-Xmx32g -DGATK_STACKTRACE_ON_USER_EXCEPTION=true" GenotypeGVCFs \
+gatk --java-options "-Xmx100g -DGATK_STACKTRACE_ON_USER_EXCEPTION=true" GenotypeGVCFs \
    -R "$REFERENCE" \
    -V gendb://"$RESULTS"/db/db_"$CHR" \
    -O "$RESULTS"/vcf/VITVarB40-14_v2.0_hap1_chr"$CHR"_allsites.vcf.gz \
    -all-sites \
-#   -L VITVarB40-14_v2.0.hap1.chr${CHR} \
-   -L ${INT} \
+   -L chr${CHR}.filtered.interval_list \
    -ip 100 \
    --genomicsdb-shared-posixfs-optimizations true \
    --tmp-dir "$TEMP_DIR"
